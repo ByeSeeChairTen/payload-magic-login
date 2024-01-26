@@ -51,6 +51,11 @@ export const config = buildConfig({
   ...
 ```
 
+#### Things to consider
+
+At this moment, it creates a user collection for you - with an email and salt/hash (plan is to support this alongside local auth, working on that).
+I will add support to extend this or have it update the given collection at a later date.
+
 #### Example
 
 In the dev folder, you’ll find a basic payload project, created with `npx create-payload-app`.
