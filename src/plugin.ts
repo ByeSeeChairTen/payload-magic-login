@@ -19,7 +19,7 @@ import { Payload } from 'payload';
 
 type PluginType = (pluginOptions: PluginTypes) => Plugin
 
-export const samplePlugin =
+export const magicLinkPlugin =
   (pluginOptions: PluginTypes): Plugin =>
     (incomingConfig) => {
       let config = { ...incomingConfig }

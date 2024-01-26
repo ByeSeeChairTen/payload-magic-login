@@ -1,5 +1,7 @@
 # Payload Plugin Template
 
+## THIS IS A PACKAGE IN PROGRESS - DON'T USE YET
+
 A template repo to create a [Payload CMS](https://payloadcms.com) plugin.
 
 Payload is built with a robust infrastructure intended to support Plugins with ease. This provides a simple, modular, and reusable way for developers to extend the core capabilities of Payload.
