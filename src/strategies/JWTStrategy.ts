@@ -2,6 +2,7 @@
 import type { StrategyOptions } from 'passport-jwt'
 // @ts-ignore
 import type { Strategy as PassportStrategy } from 'passport-strategy'
+// @ts-ignore
 import type { Request } from 'express'
 import type { SanitizedConfig } from 'payload/dist/config/types'
 
@@ -38,8 +39,6 @@ export default ({ collections, config, secret }: Payload): PassportStrategy => {
         depth: isGraphQL ? 0 : collection.config.auth.depth,
         req,
       })
-
-      console.log("user2", user)
 
       if (user && (!collection.config.auth.verify || user._verified)) {
         user.collection = collection.config.slug

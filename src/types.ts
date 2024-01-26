@@ -6,10 +6,13 @@ export interface PluginTypes {
    * @default false
    */
   enabled?: boolean
+  /**
+   * Secret used to sign JWTs
+   */
   secret: string
+  /**
+   * The payload instance
+   * @default payload
+   */
   payload: Payload
-}
-
-export interface NewCollectionTypes {
-  title: string
 }

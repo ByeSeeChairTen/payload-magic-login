@@ -1,35 +1,46 @@
 import React from 'react'
 
 export default function LoginButton() {
+  const [success, setSuccess] = React.useState(false)
   const [email, setEmail] = React.useState('')
 
   const handleSubmit = async () => {
     const body = {
       destination: email,
-      name: 'test',
-      redirectURL: 'http://localhost:3000/admin',
-      type: 'login',
+      target: 'admin',
     }
-    const response = await fetch('http://localhost:3000/api/auth/magiclogin', {
+    const response = await fetch('/api/auth/magiclogin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    const { error } = await response.json()
-    if (error) {
-      throw new Error(error.message)
+    const data = await response.json()
+
+    if (data.code) {
+      setSuccess(true)
+    }
+
+    if (data.error) {
+      throw new Error(data.error.message)
     }
   }
 
   return (
     <div>
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        onChange={e => setEmail(e.target.value)}
-      />
-      <button onClick={handleSubmit}>Login</button>
+      {success && <div>Check your email for a login link!</div>}
+      {!success && (
+        <>
+          <div className="input-wrapper">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={e => setEmail(e.target.value)}
+            />
+          </div>
+          <button onClick={handleSubmit}>Login</button>
+        </>
+      )}
     </div>
   )
 }

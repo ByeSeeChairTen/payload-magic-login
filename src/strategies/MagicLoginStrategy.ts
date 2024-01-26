@@ -1,7 +1,7 @@
 
 // @ts-ignore
 import passport from "passport";
-import MagicLoginStrategy from "passport-magic-login"
+import MagicLoginStrategy from "@bsct/passport-magic-login"
 import { generatePasswordSaltHash } from "payload/dist/auth/strategies/local/generatePasswordSaltHash";
 import crypto from "crypto";
 import { Payload } from "payload";
@@ -24,7 +24,6 @@ export default (payload: Payload): MagicLoginStrategy => {
     } else {
       // Generate a secure random password
       const randomPassword = crypto.randomBytes(32).toString('hex');
-      console.log("randomPassword", randomPassword)
       const { hash, salt } = await generatePasswordSaltHash({ password: randomPassword });
 
 
@@ -62,11 +61,11 @@ export default (payload: Payload): MagicLoginStrategy => {
     // for example "/auth/magiclogin/confirm?token=<longtoken>"
     sendMagicLink: async (destination, href) => {
 
-      const link = `http://localhost:3000/api${href}`
+      const link = `${payload.config.serverURL}/api${href}`
 
-      console.log(link);
       payload.sendEmail({
         to: destination,
+        from: payload.emailOptions.fromAddress,
         subject: "GetRekd: Login Link",
         html: `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: ${link}`
       })
@@ -79,7 +78,6 @@ export default (payload: Payload): MagicLoginStrategy => {
     // In standard passport fashion, call callback with the error as the first argument (if there was one)
     // and the user data as the second argument!
     verify: async (payload, callback) => {
-      console.log("verify", payload)
       // Get or create a user with the provided email from the database
       let user = await findOrCreateUser("users", payload.destination);
       if (user) {

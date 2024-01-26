@@ -27,6 +27,21 @@ export default buildConfig({
       return newConfig
     },
   },
+  email: {
+    fromName: 'Oscar - GetRekd app',
+    fromAddress: 'oscar@getrekd.lol',
+    transportOptions: {
+      host: process.env.SMTP_HOST,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      port: process.env.SMTP_PORT,
+      secure: Number(process.env.SMTP_SECURE) === 465,
+      requireTLS: Number(process.env.SMTP_SECURE) === 587,
+    }
+  },
+  serverURL: process.env.SERVER_URL || 'http://localhost:3000',
   editor: slateEditor({}),
   collections: [
     Examples,

@@ -28,31 +28,31 @@ export const magicLinkPlugin =
       const webpack = extendWebpackConfig(incomingConfig)
 
       const magicLoginStrategy = MagicLoginStrategy(payload);
-      
+
       const sessionMiddleware = createSession.create(payload);
 
-      config.email = {
-        fromName: 'GetRekd',
-        fromAddress: 'noreply@getrekd.lol',
-        logMockCredentials: true, // Optional
-      },
-        config.admin = {
-          ...(config.admin || {}),
-          // If you extended the webpack config, add it back in here
-          // If you did not extend the webpack config, you can remove this line
-          webpack,
+      // If config.email isn't defined, throw an error
+      if (!config.email) {
+        throw new Error('You must define an email configuration in your Payload config')
+      }
 
-          // Add additional admin config here
+      config.admin = {
+        ...(config.admin || {}),
+        // If you extended the webpack config, add it back in here
+        // If you did not extend the webpack config, you can remove this line
+        webpack,
 
-          components: {
-            ...(config.admin?.components || {}),
-            // Add additional admin components here
-            afterLogin: [
-              ...(config.admin?.components?.afterLogin || []),
-              LoginButton,
-            ],
-          },
-        }
+        // Add additional admin config here
+
+        components: {
+          ...(config.admin?.components || {}),
+          // Add additional admin components here
+          afterLogin: [
+            ...(config.admin?.components?.afterLogin || []),
+            LoginButton,
+          ],
+        },
+      }
 
       // If the plugin is disabled, return the config without modifying it
       // The order of this check is important, we still want any webpack extensions to be applied even if the plugin is disabled
@@ -120,11 +120,12 @@ export const magicLinkPlugin =
                 domain: collectionConfig.auth.cookies.domain || undefined,  // Cookie domain
               });
 
-
-              res.send({
-                user: sanitizedUser,
-                token,
-              })
+              // If query.target is "admin", redirect to the admin
+              if (req.query.target === "admin") {
+                res.redirect("/admin")
+              } else {
+                res.send({ success: true, token })
+              }
             }]
         }
       ]
