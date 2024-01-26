@@ -27,7 +27,7 @@ export default function LoginButton() {
 
   return (
     <div>
-      {success && <div>Check your email for a login link!</div>}
+      {success && <div style={{ textAlign: "center" }}>Check your email for a login link!</div>}
       {!success && (
         <>
           <div className="field-type email">
