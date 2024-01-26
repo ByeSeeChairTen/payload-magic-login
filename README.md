@@ -1,6 +1,6 @@
 # Payload Magic Login Plugin
 
-## THIS IS A PACKAGE IN PROGRESS - DON'T USE YET
+## THIS IS A PACKAGE UNDER ACTIVE DEVELOPMENT - USE AT YOUR OWN RISK
 
 This is built with the [Payload CMS](https://payloadcms.com) plugin template.
 
