@@ -1,6 +1,6 @@
 {
   "name": "payload-magic-login",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "homepage:": "https://payloadcms.com",
   "repository": "git@github.com:ByeSeeChairTen/payload-magic-login.git",
   "description": "A Magic Login plugin for Payload CMS",
