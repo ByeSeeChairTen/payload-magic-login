@@ -24,6 +24,7 @@ export const magicLoginPlugin =
     (incomingConfig) => {
       let config = { ...incomingConfig }
       const { payload } = pluginOptions;
+
       // If you need to add a webpack alias, use this function to extend the webpack config
       const webpack = extendWebpackConfig(incomingConfig)
 
