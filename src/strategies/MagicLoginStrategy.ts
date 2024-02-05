@@ -8,7 +8,7 @@ import { Payload } from "payload";
 
 type Options = {
   payload: Payload;
-  sendMagicLink: (destination: string, href: string) => void;
+  sendMagicLink: (destination: string, href: string) => Promise<void>;
 }
 
 // IMPORTANT: ALL OPTIONS ARE REQUIRED!
