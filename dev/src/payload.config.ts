@@ -27,7 +27,7 @@ export default buildConfig({
       return newConfig
     },
   },
-  email: {
+  /*email: {
     fromName: 'Oscar - GetRekd app',
     fromAddress: 'oscar@getrekd.lol',
     transportOptions: {
@@ -40,7 +40,7 @@ export default buildConfig({
       secure: Number(process.env.SMTP_SECURE) === 465,
       requireTLS: Number(process.env.SMTP_SECURE) === 587,
     }
-  },
+  },*/
   serverURL: process.env.SERVER_URL || 'http://localhost:3000',
   editor: slateEditor({}),
   collections: [
@@ -52,7 +52,22 @@ export default buildConfig({
   graphQL: {
     schemaOutputFile: path.resolve(__dirname, 'generated-schema.graphql'),
   },
-  plugins: [magicLoginPlugin({ enabled: true, secret: process.env.PAYLOAD_SECRET, payload: payload })],
+  plugins: [magicLoginPlugin({
+    enabled: true, secret: process.env.PAYLOAD_SECRET, payload: payload, targets: [
+      {
+        target: "app",
+        uri: "exp://my-app.exp.direct",
+        subject: "GetRekd: Login Link",
+        html: (link) => `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: ${link}`
+      },
+      {
+        target: "app-dev",
+        uri: "exp://my-app-dev.exp.direct",
+        subject: "GetRekd: Login Link",
+        html: (link) => `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: \n\n${link}`
+      },
+    ]
+  })],
   db: mongooseAdapter({
     url: process.env.DATABASE_URI,
   }),

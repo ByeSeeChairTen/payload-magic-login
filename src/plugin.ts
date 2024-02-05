@@ -8,7 +8,6 @@ import APIError from 'payload/dist/errors/APIError';
 import httpStatus from 'http-status'
 // @ts-ignore
 import passport from "passport";
-import userCollection from './userCollection';
 import MagicLoginStrategy from './strategies/MagicLoginStrategy';
 import JWTStrategy from './strategies/JWTStrategy';
 import createSession from './utils/createSession';
@@ -28,13 +27,48 @@ export const magicLoginPlugin =
       // If you need to add a webpack alias, use this function to extend the webpack config
       const webpack = extendWebpackConfig(incomingConfig)
 
-      const magicLoginStrategy = MagicLoginStrategy(payload);
+      const sendMagicLink = async (destination: string, href: string) => {
+        const params = new URLSearchParams(href.split("?")[1]);
+        const targetIsAdmin = params.get("target") === "admin";
+
+        if (targetIsAdmin) {
+          const link = `${payload.config.serverURL}/api${href}`
+          payload.sendEmail({
+            to: destination,
+            from: payload.emailOptions.fromAddress,
+            subject: "GetRekd: Login Link",
+            html: `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: ${link}`
+          })
+          return;
+        }
+
+        const target = pluginOptions.targets?.find(target => href.includes(`target=${target.target}`))
+        if (target) {
+          const token = params.get("token");
+          const link = `${target.uri}?email=${destination}&token=${token}`
+          payload.sendEmail({
+            to: destination,
+            from: payload.emailOptions.fromAddress,
+            subject: target.subject,
+            html: target.html(link)
+          })
+          return;
+        }
+      }
+
+      const magicLoginStrategy = MagicLoginStrategy({ payload, sendMagicLink });
 
       const sessionMiddleware = createSession.create(payload);
 
       // If config.email isn't defined, throw an error
       if (!config.email) {
-        throw new Error('You must define an email configuration in your Payload config')
+        console.log('You forgot to define an email configuration in your Payload config');
+
+        config.email = {
+          fromName: "Admin",
+          fromAddress: "noreply@email.com",
+          logMockCredentials: true,
+        }
       }
 
       config.admin = {
@@ -63,22 +97,43 @@ export const magicLoginPlugin =
 
       config.collections = [
         ...(config.collections || []),
-        // Add additional collections here
         {
-          ...userCollection, auth: {
+          slug: 'users',
+          admin: {
+            useAsTitle: 'email',
+          },
+          auth: {
+            disableLocalStrategy: true,
             strategies: [{ name: "magiclogin", strategy: magicLoginStrategy }, {
               name: "jwt", strategy: JWTStrategy({ ...payload, secret: pluginOptions.secret } as Payload)
-            }],
-            disableLocalStrategy: true,
-          }
-        }, // delete this line to remove the example collection
+            }]
+          },
+          fields: [
+            {
+              name: "email",
+              type: "email",
+              required: true,
+            },
+            {
+              name: 'salt',
+              hidden: true,
+              type: 'text',
+            },
+            {
+              name: 'hash',
+              hidden: true,
+              type: 'text',
+            },
+          ],
+        }
+
       ]
 
       config.endpoints = [
         ...(config.endpoints || []),
         // Add additional endpoints here
         {
-          path: "auth/logout",
+          path: "/auth/logout",
           method: "post",
           handler: (req, res) => {
 
@@ -121,7 +176,6 @@ export const magicLoginPlugin =
                 domain: collectionConfig.auth.cookies.domain || undefined,  // Cookie domain
               });
 
-              // If query.target is "admin", redirect to the admin
               if (req.query.target === "admin") {
                 res.redirect("/admin")
               } else {

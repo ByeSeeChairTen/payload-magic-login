@@ -20,6 +20,14 @@ export const config = buildConfig({
       secret: process.env.PAYLOAD_SECRET, // A secret used to sign the JWTs
       payload: payload, // Your payload instance
       enabled: true, 
+      targets: [
+         {
+          target: "app-dev",
+          uri: "exp://my-app-dev.exp.direct",
+          subject: "GetRekd: Login Link",
+          html: (link) => `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: \n\n${link}`
+        },
+      ]
     })
   ]
 });
@@ -68,6 +76,23 @@ plugins: [
       secret: process.env.PAYLOAD_SECRET, // A secret used to sign the JWTs
       payload: payload, // Your payload instance
       enabled: true, 
+      // Targets are used to determine where the link should point to.
+      // For example: target: "admin" (default) creates a link to the admin panel.
+      // The targets "app" and "app-dev" could be for opening the link in an app.
+      targets: [
+        {
+          target: "app",
+          uri: "exp://my-app.exp.direct",
+          subject: "GetRekd: Login Link",
+          html: (link) => `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: ${link}`
+        },
+        {
+          target: "app-dev",
+          uri: "exp://my-app-dev.exp.direct",
+          subject: "GetRekd: Login Link",
+          html: (link) => `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: \n\n${link}`
+        },
+      ]
     })
 ]
 ```
@@ -97,6 +122,26 @@ export interface PluginTypes {
    * @default payload
    */
   payload: Payload
+  /**
+   * Your own custom targets:
+   * @default []
+   * @example
+   * targets: [
+   *  { 
+   *   target: "app",
+   *   uri: "exp://my-app.example.com",
+   *   subject: "GetRekd: Login Link",
+   *   html: `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: ${link}`
+   *  },
+   *  {
+   *   target: "admin",
+   *   uri: "https://admin.getrekd.lol",
+   *   subject: "GetRekd: Login Link",
+   *   html: `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: ${link}`
+   *  }
+   * ]
+   */
+  `targets?: Array<{ target: string, uri: string, subject: string, html: (link: string) => string }>`
 }
 ```
 

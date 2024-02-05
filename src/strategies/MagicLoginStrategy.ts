@@ -6,8 +6,13 @@ import { generatePasswordSaltHash } from "payload/dist/auth/strategies/local/gen
 import crypto from "crypto";
 import { Payload } from "payload";
 
+type Options = {
+  payload: Payload;
+  sendMagicLink: (destination: string, href: string) => void;
+}
+
 // IMPORTANT: ALL OPTIONS ARE REQUIRED!
-export default (payload: Payload): MagicLoginStrategy => {
+export default ({ payload, sendMagicLink }: Options): MagicLoginStrategy => {
   async function findOrCreateUser(collectionSlug: string, email: string) {
     let users = await payload.find({
       collection: collectionSlug,
@@ -59,17 +64,7 @@ export default (payload: Payload): MagicLoginStrategy => {
     // "destination" is what you POST-ed from the client
     // "href" is your confirmUrl with the confirmation token,
     // for example "/auth/magiclogin/confirm?token=<longtoken>"
-    sendMagicLink: async (destination, href) => {
-
-      const link = `${payload.config.serverURL}/api${href}`
-
-      payload.sendEmail({
-        to: destination,
-        from: payload.emailOptions.fromAddress,
-        subject: "GetRekd: Login Link",
-        html: `Click this link to finish logging in: <a href="${link}">LOGIN LINK</a>, if you can't click the link, copy and paste this link into your browser: ${link}`
-      })
-    },
+    sendMagicLink: sendMagicLink,
 
     // Once the user clicks on the magic link and verifies their login attempt,
     // you have to match their email to a user record in the database.
@@ -91,7 +86,7 @@ export default (payload: Payload): MagicLoginStrategy => {
 
     // Optional: options passed to the jwt.sign call (https://github.com/auth0/node-jsonwebtoken#jwtsignpayload-secretorprivatekey-options-callback)
     jwtOptions: {
-      expiresIn: "2 days",
+      expiresIn: "90 days",
     }
   })
 }
